@@ -42,6 +42,7 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
     // depending on the user's project. onAttachedToEngine or registerWith must both be defined
     // in the same class.
     companion object {
+        var shared: AgoraRtcEnginePlugin? = null
         @JvmStatic
         fun registerWith(registrar: Registrar) {
             AgoraRtcEnginePlugin().apply {
@@ -65,9 +66,11 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
     override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         rtcChannelPlugin.onAttachedToEngine(binding)
         initPlugin(binding.applicationContext, binding.binaryMessenger, binding.platformViewRegistry)
+        shared = this
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+        shared = null
         rtcChannelPlugin.onDetachedFromEngine(binding)
         methodChannel.setMethodCallHandler(null)
         eventChannel.setStreamHandler(null)
@@ -90,7 +93,7 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
         }
     }
 
-    fun engine(): RtcEngine? {
+    public fun engine(): RtcEngine? {
         return manager.engine
     }
 
